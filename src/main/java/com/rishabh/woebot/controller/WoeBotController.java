@@ -105,6 +105,8 @@ public class WoeBotController {
 
 		// Parse the message and add widgets to the responseStr in the order that
 		// they were requested in the message.
+		
+		System.out.println("Message :->"+ message);
 		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
 		card.setHeader(header);
@@ -117,7 +119,7 @@ public class WoeBotController {
 		Button widget = new Button().setTextButton(button).set("msgId", "1");
 		
 		TextButton button2 = new TextButton().setText("Reset Lan password").setOnClick(onClick);
-		Button widget2 = new Button().setTextButton(button).set("msgId", "1");
+		Button widget2 = new Button().setTextButton(button2).set("msgId", "2");
 		
 		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
 		
