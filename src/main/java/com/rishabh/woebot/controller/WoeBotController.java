@@ -104,6 +104,7 @@ public class WoeBotController {
 
 		// Parse the message and add widgets to the responseStr in the order that
 		// they were requested in the message.
+		System.out.println("message: -> "+message);
 		Stream.of(message.split(" ")).forEach((s -> {
 			if (s.contains("header")) {
 				CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
