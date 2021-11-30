@@ -1,6 +1,7 @@
 package com.rishabh.woebot.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -104,8 +105,26 @@ public class WoeBotController {
 
 		// Parse the message and add widgets to the responseStr in the order that
 		// they were requested in the message.
-		System.out.println("message: -> "+message);
-		Stream.of(message.split(" ")).forEach((s -> {
+		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
+				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
+		card.setHeader(header);
+		
+		FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
+				.setParameters(customParameters);
+		OnClick onClick = new OnClick().setAction(action);
+		
+		TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
+		Button widget = new Button().setTextButton(button).set("msgId", "1");
+		
+		TextButton button2 = new TextButton().setText("Reset Lan password").setOnClick(onClick);
+		Button widget2 = new Button().setTextButton(button).set("msgId", "1");
+		
+		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
+		
+		
+		
+		
+		/*Stream.of(message.split(" ")).forEach((s -> {
 			if (s.contains("header")) {
 				CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
 						.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
@@ -147,7 +166,7 @@ public class WoeBotController {
 				Image widget = new Image().setImageUrl("https://goo.gl/Bpa3Y5");
 				widgets.add(new WidgetMarkup().setImage(widget));
 			}
-		}));
+		}));*/
 
 		Section section = new Section().setWidgets(widgets);
 		card.setSections(Collections.singletonList(section));
