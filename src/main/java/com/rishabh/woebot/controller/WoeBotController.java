@@ -107,9 +107,9 @@ public class WoeBotController {
 		// they were requested in the message.
 		
 		System.out.println("Message :->"+ message);
-		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
+		/*CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
-		card.setHeader(header);
+		card.setHeader(header);*/
 		
 		FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
 				.setParameters(customParameters);
@@ -118,10 +118,10 @@ public class WoeBotController {
 		TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
 		Button widget = new Button().setTextButton(button).set("msgId", "1");
 		
-		TextButton button2 = new TextButton().setText("Reset Lan password").setOnClick(onClick);
-		Button widget2 = new Button().setTextButton(button2).set("msgId", "2");
+		/*TextButton button2 = new TextButton().setText("Reset Lan password").setOnClick(onClick);
+		Button widget2 = new Button().setTextButton(button2).set("msgId", "2");*/
 		
-		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
+		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget)));
 		
 		
 		
