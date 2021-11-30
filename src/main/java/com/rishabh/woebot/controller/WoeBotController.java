@@ -40,7 +40,7 @@ public class WoeBotController {
 	private static final String INTERACTIVE_IMAGE_BUTTON_ACTION = "doImageButtonAction";
 	private static final String INTERACTIVE_BUTTON_KEY = "originalMessage";
 	private static final String HEADER_IMAGE = "https://goo.gl/5obRKj";
-	private static final String BOT_NAME = "Card Bot Java";
+	private static final String BOT_NAME = "Tsys Help desk";
 	private static final String REDIRECT_URL = "https://goo.gl/kwhSNz";
 
 	/**
@@ -121,10 +121,7 @@ public class WoeBotController {
 		TextButton button2 = new TextButton().setText("Reset Lan password").setOnClick(onClick);
 		Button widget2 = new Button().setTextButton(button2).set("msgId", "2");
 		
-		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget)));*/
-		
-		
-		
+		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget)));
 		
 		Stream.of(message.split(" ")).forEach((s -> {
 			if (s.contains("header")) {
@@ -159,9 +156,7 @@ public class WoeBotController {
 				Button widget2 = new Button().setTextButton(button2); 
 		
 				widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
-			} 
-			
-			/*else if (s.contains("interactiveimagebutton")) {
+			} else if (s.contains("interactiveimagebutton")) {
 				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_IMAGE_BUTTON_ACTION)
 						.setParameters(customParameters);
 				OnClick onClick = new OnClick().setAction(action);
@@ -183,8 +178,29 @@ public class WoeBotController {
 			} else if (s.contains("image")) {
 				Image widget = new Image().setImageUrl("https://goo.gl/Bpa3Y5");
 				widgets.add(new WidgetMarkup().setImage(widget));
-			}*/
-		}));
+			}
+		}));*/
+		
+		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("How i can help you")
+				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
+		card.setHeader(header);
+		List<ActionParameter> customParameters = Collections
+				.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset gmail password"));
+		FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
+				.setParameters(customParameters);
+		OnClick onClick = new OnClick().setAction(action);
+		TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
+		Button widget = new Button().setTextButton(button);
+		
+		List<ActionParameter> customParameters2 = Collections
+				.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset LAN password"));
+		FormAction action2 = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
+				.setParameters(customParameters2);
+		OnClick onClick2 = new OnClick().setAction(action2);
+		TextButton button2 = new TextButton().setText("Reset LAN password").setOnClick(onClick2);
+		Button widget2 = new Button().setTextButton(button2); 
+
+		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
 
 		Section section = new Section().setWidgets(widgets);
 		card.setSections(Collections.singletonList(section));
