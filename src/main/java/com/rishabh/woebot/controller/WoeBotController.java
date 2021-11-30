@@ -100,8 +100,8 @@ public class WoeBotController {
 	private Card createCardResponse(String message) {
 		Card card = new Card();
 		List<WidgetMarkup> widgets = new ArrayList<>();
-		List<ActionParameter> customParameters = Collections
-				.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue(message));
+		//List<ActionParameter> customParameters = Collections
+		//		.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue(message));
 
 		// Parse the message and add widgets to the responseStr in the order that
 		// they were requested in the message.
@@ -139,17 +139,29 @@ public class WoeBotController {
 						.setBottomLabel("The bottom label").setIcon("STAR");
 				widgets.add(new WidgetMarkup().setKeyValue(widget));
 			} else if (s.contains("interactivetextbutton")) {
+				CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
+						.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
+				card.setHeader(header);
+				List<ActionParameter> customParameters = Collections
+						.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset gmail password"));
 				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
 						.setParameters(customParameters);
 				OnClick onClick = new OnClick().setAction(action);
 				TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
 				Button widget = new Button().setTextButton(button);
 				
-				TextButton button2 = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
+				List<ActionParameter> customParameters2 = Collections
+						.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset LAN password"));
+				FormAction action2 = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
+						.setParameters(customParameters2);
+				OnClick onClick2 = new OnClick().setAction(action2);
+				TextButton button2 = new TextButton().setText("Reset LAN password").setOnClick(onClick2);
 				Button widget2 = new Button().setTextButton(button2); 
 		
 				widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
-			} else if (s.contains("interactiveimagebutton")) {
+			} 
+			
+			/*else if (s.contains("interactiveimagebutton")) {
 				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_IMAGE_BUTTON_ACTION)
 						.setParameters(customParameters);
 				OnClick onClick = new OnClick().setAction(action);
@@ -171,7 +183,7 @@ public class WoeBotController {
 			} else if (s.contains("image")) {
 				Image widget = new Image().setImageUrl("https://goo.gl/Bpa3Y5");
 				widgets.add(new WidgetMarkup().setImage(widget));
-			}
+			}*/
 		}));
 
 		Section section = new Section().setWidgets(widgets);
