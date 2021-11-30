@@ -142,9 +142,13 @@ public class WoeBotController {
 				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
 						.setParameters(customParameters);
 				OnClick onClick = new OnClick().setAction(action);
-				TextButton button = new TextButton().setText("INTERACTIVE BUTTON").setOnClick(onClick);
+				TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
 				Button widget = new Button().setTextButton(button);
-				widgets.add(new WidgetMarkup().setButtons(Collections.singletonList((widget))));
+				
+				TextButton button2 = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
+				Button widget2 = new Button().setTextButton(button2); 
+		
+				widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
 			} else if (s.contains("interactiveimagebutton")) {
 				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_IMAGE_BUTTON_ACTION)
 						.setParameters(customParameters);
