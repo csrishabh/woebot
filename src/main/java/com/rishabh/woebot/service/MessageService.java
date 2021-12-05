@@ -13,10 +13,14 @@ public class MessageService {
 
 	@Autowired
 	private MessageRepo repo;
-	
-	
-	public List<BotMessage> getInitialResponse(){
-		
+
+	public List<BotMessage> getInitialResponse() {
+
 		return repo.getInitialResponse();
+	}
+
+	public List<BotMessage> getResponseByAnsId(String ansId) {
+
+		return repo.getMessageByAndId(ansId);
 	}
 }

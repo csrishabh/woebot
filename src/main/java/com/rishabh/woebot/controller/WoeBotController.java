@@ -33,11 +33,8 @@ import com.rishabh.woebot.service.MessageService;
 public class WoeBotController {
 
 	private static final String INTERACTIVE_TEXT_BUTTON_ACTION = "doTextButtonAction";
-	private static final String INTERACTIVE_IMAGE_BUTTON_ACTION = "doImageButtonAction";
-	private static final String INTERACTIVE_BUTTON_KEY = "originalMessage";
 	private static final String HEADER_IMAGE = "https://rishwoebot.herokuapp.com/bot_icon.jpg";
 	private static final String BOT_NAME = "Tsys Help desk";
-	private static final String REDIRECT_URL = "https://goo.gl/kwhSNz";
 	private static final String MESSAGE_ID = "messageId";
 
 	@Autowired
@@ -48,7 +45,7 @@ public class WoeBotController {
 	@ResponseBody
 	public List<BotMessage> Test() {
 		
-		return msgService.getInitialResponse();
+		return msgService.getResponseByAnsId("61ac63b0e64f046556a82b08");
 		
 	}
 	
@@ -74,12 +71,15 @@ public class WoeBotController {
 			} else {
 				String displayName = event.at("/user/displayName").asText();
 				String replyText = String.format("Thanks for adding me to a DM, %s!", displayName);
+				List<BotMessage> msgList = msgService.getInitialResponse();
+				Card card = createCardResponse(event.at("/message/text").asText(), msgList, true);
+				reply.setCards(Collections.singletonList(card));
 				reply.setText(replyText);
 			}
 			break;
 		case "MESSAGE":
 			List<BotMessage> msgList = msgService.getInitialResponse();
-			Card card = createCardResponse(event.at("/message/text").asText(), msgList);
+			Card card = createCardResponse(event.at("/message/text").asText(), msgList, true);
 			reply.setCards(Collections.singletonList(card));
 			break;
 		case "CARD_CLICKED":
@@ -108,7 +108,7 @@ public class WoeBotController {
 	 * @return a card instance
 	 */
 	
-	private Card createCardResponse(String message, List<BotMessage> msgList) {
+	private Card createCardResponse(String message, List<BotMessage> msgList, boolean isInitialResponse) {
 
 		System.out.println("Message :->" + message);
 		Card card = new Card();
@@ -124,9 +124,11 @@ public class WoeBotController {
 		 * .setBottomLabel("The bottom label").setIcon("STAR"); widgets.add(new
 		 * WidgetMarkup().setKeyValue(widget)); } } }));
 		 */
+		if(isInitialResponse) {
 		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("How i can help you")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
 		card.setHeader(header);
+		}
 		List<Button> buttonsList = new ArrayList<>();
 		msgList.forEach(msg -> {
 
@@ -185,21 +187,10 @@ public class WoeBotController {
 	 * @param customParameterValue custom payload from event
 	 * @return a response card
 	 */
-	private Card respondToInteractiveCardClick(String actionName, String customParameterValue) {
-		// Determine which button the user clicked.
-		String message = String.format("You clicked <u>%s</u>. <br> Your original message was \"%s\".",
-				actionName.equals(INTERACTIVE_TEXT_BUTTON_ACTION) ? "a TextButton" : "an ImageButton",
-				customParameterValue);
-
-		Card card = new Card();
-		CardHeader header = new CardHeader();
-		header.setTitle(BOT_NAME).setSubtitle("Interactive card click").setImageUrl(HEADER_IMAGE)
-				.setImageStyle("IMAGE");
-		card.setHeader(header);
-		TextParagraph text = new TextParagraph().setText(message);
-		List<WidgetMarkup> widgets = Collections.singletonList(new WidgetMarkup().setTextParagraph(text));
-		Section section = new Section().setWidgets(widgets);
-		card.setSections(Collections.singletonList(section));
-		return card;
+	private Card respondToInteractiveCardClick(String actionName, String actionMsgId) {
+		
+		System.out.println("Action msg ID ->"+ actionMsgId);
+		List<BotMessage> msgList = msgService.getResponseByAnsId(actionMsgId);
+		return createCardResponse(actionMsgId, msgList, false);
 	}
 }
