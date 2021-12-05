@@ -1,21 +1,17 @@
 package com.rishabh.woebot.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
-
-
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.google.api.services.chat.v1.model.ActionParameter;
 import com.google.api.services.chat.v1.model.Button;
 import com.google.api.services.chat.v1.model.Card;
@@ -23,7 +19,6 @@ import com.google.api.services.chat.v1.model.CardHeader;
 import com.google.api.services.chat.v1.model.FormAction;
 import com.google.api.services.chat.v1.model.Image;
 import com.google.api.services.chat.v1.model.ImageButton;
-import com.google.api.services.chat.v1.model.KeyValue;
 import com.google.api.services.chat.v1.model.Message;
 import com.google.api.services.chat.v1.model.OnClick;
 import com.google.api.services.chat.v1.model.OpenLink;
@@ -31,7 +26,8 @@ import com.google.api.services.chat.v1.model.Section;
 import com.google.api.services.chat.v1.model.TextButton;
 import com.google.api.services.chat.v1.model.TextParagraph;
 import com.google.api.services.chat.v1.model.WidgetMarkup;
-
+import com.rishabh.woebot.domain.BotMessage;
+import com.rishabh.woebot.service.MessageService;
 
 @RestController
 public class WoeBotController {
@@ -42,7 +38,20 @@ public class WoeBotController {
 	private static final String HEADER_IMAGE = "https://goo.gl/5obRKj";
 	private static final String BOT_NAME = "Tsys Help desk";
 	private static final String REDIRECT_URL = "https://goo.gl/kwhSNz";
+	private static final String MESSAGE_ID = "messageId";
 
+	@Autowired
+	private MessageService msgService;
+
+	
+	@GetMapping("/test")
+	@ResponseBody
+	public List<BotMessage> Test() {
+		
+		return msgService.getInitialResponse();
+		
+	}
+	
 	/**
 	 * Handles a GET request to the /bot endpoint.
 	 *
@@ -53,7 +62,7 @@ public class WoeBotController {
 	@ResponseBody
 	public Message onEvent(@RequestBody JsonNode event) {
 		Message reply = new Message();
-		
+
 		String eventType = event.get("type").asText();
 		switch (eventType) {
 		case "ADDED_TO_SPACE":
@@ -69,7 +78,8 @@ public class WoeBotController {
 			}
 			break;
 		case "MESSAGE":
-			Card card = createCardResponse(event.at("/message/text").asText());
+			List<BotMessage> msgList = msgService.getInitialResponse();
+			Card card = createCardResponse(event.at("/message/text").asText(), msgList);
 			reply.setCards(Collections.singletonList(card));
 			break;
 		case "CARD_CLICKED":
@@ -90,118 +100,79 @@ public class WoeBotController {
 		}
 		return reply;
 	}
-
+	
 	/**
 	 * Creates a card-formatted response based on the message sent in Hangouts Chat.
 	 *
 	 * @param message the event object sent from Hangouts Chat
 	 * @return a card instance
 	 */
-	private Card createCardResponse(String message) {
+	
+	private Card createCardResponse(String message, List<BotMessage> msgList) {
+
+		System.out.println("Message :->" + message);
 		Card card = new Card();
 		List<WidgetMarkup> widgets = new ArrayList<>();
-		//List<ActionParameter> customParameters = Collections
-		//		.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue(message));
-
-		// Parse the message and add widgets to the responseStr in the order that
-		// they were requested in the message.
-		
-		System.out.println("Message :->"+ message);
-		/*CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
-				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
-		card.setHeader(header);
-		
-		FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
-				.setParameters(customParameters);
-		OnClick onClick = new OnClick().setAction(action);
-		
-		TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
-		Button widget = new Button().setTextButton(button).set("msgId", "1");
-		
-		TextButton button2 = new TextButton().setText("Reset Lan password").setOnClick(onClick);
-		Button widget2 = new Button().setTextButton(button2).set("msgId", "2");
-		
-		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget)));
-		
-		Stream.of(message.split(" ")).forEach((s -> {
-			if (s.contains("header")) {
-				CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
-						.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
-				card.setHeader(header);
-			} else if (s.contains("textparagraph")) {
-				TextParagraph widget = new TextParagraph().setText("<b>This</b> is a <i>text paragraph</i>.");
-				widgets.add(new WidgetMarkup().setTextParagraph(widget));
-			} else if (s.contains("keyvalue")) {
-				KeyValue widget = new KeyValue().setTopLabel("KeyValue widget").setContent("This is a KeyValue widget")
-						.setBottomLabel("The bottom label").setIcon("STAR");
-				widgets.add(new WidgetMarkup().setKeyValue(widget));
-			} else if (s.contains("interactivetextbutton")) {
-				CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
-						.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
-				card.setHeader(header);
-				List<ActionParameter> customParameters = Collections
-						.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset gmail password"));
-				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
-						.setParameters(customParameters);
-				OnClick onClick = new OnClick().setAction(action);
-				TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
-				Button widget = new Button().setTextButton(button);
-				
-				List<ActionParameter> customParameters2 = Collections
-						.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset LAN password"));
-				FormAction action2 = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
-						.setParameters(customParameters2);
-				OnClick onClick2 = new OnClick().setAction(action2);
-				TextButton button2 = new TextButton().setText("Reset LAN password").setOnClick(onClick2);
-				Button widget2 = new Button().setTextButton(button2); 
-		
-				widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
-			} else if (s.contains("interactiveimagebutton")) {
-				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_IMAGE_BUTTON_ACTION)
-						.setParameters(customParameters);
-				OnClick onClick = new OnClick().setAction(action);
-				ImageButton button = new ImageButton().setIcon("EVENT_SEAT").setOnClick(onClick);
-				Button widget = new Button().setImageButton(button);
-				widgets.add(new WidgetMarkup().setButtons(Collections.singletonList((widget))));
-			} else if (s.contains("textbutton")) {
-				OpenLink openLink = new OpenLink().setUrl(REDIRECT_URL);
-				OnClick onClick = new OnClick().setOpenLink(openLink);
-				TextButton button = new TextButton().setText("TEXT BUTTON").setOnClick(onClick);
-				Button widget = new Button().setTextButton(button);
-				widgets.add(new WidgetMarkup().setButtons(Collections.singletonList((widget))));
-			} else if (s.contains("imagebutton")) {
-				OpenLink openLink = new OpenLink().setUrl(REDIRECT_URL);
-				OnClick onClick = new OnClick().setOpenLink(openLink);
-				ImageButton button = new ImageButton().setIcon("EVENT_SEAT").setOnClick(onClick);
-				Button widget = new Button().setImageButton(button);
-				widgets.add(new WidgetMarkup().setButtons(Collections.singletonList((widget))));
-			} else if (s.contains("image")) {
-				Image widget = new Image().setImageUrl("https://goo.gl/Bpa3Y5");
-				widgets.add(new WidgetMarkup().setImage(widget));
-			}
-		}));*/
-		
+		/*
+		 * Stream.of(message.split(" ")).forEach((s -> { if (s.contains("header")) {
+		 * CardHeader header = new
+		 * CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
+		 * .setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE"); card.setHeader(header); }
+		 * else if (s.contains("keyvalue")) { KeyValue widget = new
+		 * KeyValue().setTopLabel("KeyValue widget").
+		 * setContent("This is a KeyValue widget")
+		 * .setBottomLabel("The bottom label").setIcon("STAR"); widgets.add(new
+		 * WidgetMarkup().setKeyValue(widget)); } } }));
+		 */
 		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("How i can help you")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
 		card.setHeader(header);
-		List<ActionParameter> customParameters = Collections
-				.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset gmail password"));
-		FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
-				.setParameters(customParameters);
-		OnClick onClick = new OnClick().setAction(action);
-		TextButton button = new TextButton().setText("Reset Gmail password").setOnClick(onClick);
-		Button widget = new Button().setTextButton(button);
-		
-		List<ActionParameter> customParameters2 = Collections
-				.singletonList(new ActionParameter().setKey(INTERACTIVE_BUTTON_KEY).setValue("Reset LAN password"));
-		FormAction action2 = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
-				.setParameters(customParameters2);
-		OnClick onClick2 = new OnClick().setAction(action2);
-		TextButton button2 = new TextButton().setText("Reset LAN password").setOnClick(onClick2);
-		Button widget2 = new Button().setTextButton(button2); 
+		List<Button> buttonsList = new ArrayList<>();
+		msgList.forEach(msg -> {
 
-		widgets.add(new WidgetMarkup().setButtons(Arrays.asList(widget,widget2)));
+			switch (msg.getType()) {
+			case BUTTON:
+				List<ActionParameter> customParameters = Collections
+						.singletonList(new ActionParameter().setKey(MESSAGE_ID).setValue(msg.getId()));
+				FormAction action = new FormAction().setActionMethodName(INTERACTIVE_TEXT_BUTTON_ACTION)
+						.setParameters(customParameters);
+				OnClick onClick = new OnClick().setAction(action);
+				TextButton button = new TextButton().setText(msg.getMsgTxt()).setOnClick(onClick);
+				Button widget = new Button().setTextButton(button);
+				buttonsList.add(widget);
+				break;
 
+			case LINK:
+				OpenLink openLink = new OpenLink().setUrl(msg.getRedirectUrl());
+				OnClick onClickLinkAction = new OnClick().setOpenLink(openLink);
+				TextButton linkButton = new TextButton().setText(msg.getMsgTxt()).setOnClick(onClickLinkAction);
+				Button linkWidget = new Button().setTextButton(linkButton);
+				buttonsList.add(linkWidget);
+				break;
+
+			case IMAGEBUTTON:
+				OpenLink link = new OpenLink().setUrl(msg.getRedirectUrl());
+				OnClick onClickImage = new OnClick().setOpenLink(link);
+				ImageButton imageButton = new ImageButton().setIcon(msg.getMsgTxt()).setOnClick(onClickImage);
+				Button imageWidget = new Button().setImageButton(imageButton);
+				buttonsList.add(imageWidget);
+
+			case IMAGE:
+				Image image = new Image().setImageUrl(msg.getImageUrl());
+				widgets.add(new WidgetMarkup().setImage(image));
+
+			case TEXT_PARAGRAPH:
+				TextParagraph textWidget = new TextParagraph().setText(msg.getMsgTxt());
+				widgets.add(new WidgetMarkup().setTextParagraph(textWidget));
+			default:
+				break;
+			}
+
+		});
+
+		if (buttonsList.size() > 0) {
+			widgets.add(new WidgetMarkup().setButtons(buttonsList));
+		}
 		Section section = new Section().setWidgets(widgets);
 		card.setSections(Collections.singletonList(section));
 		return card;
