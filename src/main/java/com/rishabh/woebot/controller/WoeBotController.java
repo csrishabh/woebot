@@ -155,14 +155,15 @@ public class WoeBotController {
 			case IMAGEBUTTON:
 				OpenLink link = new OpenLink().setUrl(msg.getRedirectUrl());
 				OnClick onClickImage = new OnClick().setOpenLink(link);
-				ImageButton imageButton = new ImageButton().setIcon(msg.getMsgTxt()).setOnClick(onClickImage);
+				ImageButton imageButton = new ImageButton().setIcon(msg.getImageUrl()).setOnClick(onClickImage);
 				Button imageWidget = new Button().setImageButton(imageButton);
 				buttonsList.add(imageWidget);
 
 			case IMAGE:
 				Image image = new Image().setImageUrl(msg.getImageUrl());
 				widgets.add(new WidgetMarkup().setImage(image));
-
+				break;
+				
 			case TEXT_PARAGRAPH:
 				TextParagraph textWidget = new TextParagraph().setText(msg.getMsgTxt());
 				widgets.add(new WidgetMarkup().setTextParagraph(textWidget));
