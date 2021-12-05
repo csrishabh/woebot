@@ -35,7 +35,7 @@ public class WoeBotController {
 	private static final String INTERACTIVE_TEXT_BUTTON_ACTION = "doTextButtonAction";
 	private static final String INTERACTIVE_IMAGE_BUTTON_ACTION = "doImageButtonAction";
 	private static final String INTERACTIVE_BUTTON_KEY = "originalMessage";
-	private static final String HEADER_IMAGE = "https://goo.gl/5obRKj";
+	private static final String HEADER_IMAGE = "https://rishwoebot.herokuapp.com/bot_icon.jpg";
 	private static final String BOT_NAME = "Tsys Help desk";
 	private static final String REDIRECT_URL = "https://goo.gl/kwhSNz";
 	private static final String MESSAGE_ID = "messageId";
