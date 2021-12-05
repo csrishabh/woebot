@@ -43,9 +43,9 @@ public class WoeBotController {
 	
 	@GetMapping("/test")
 	@ResponseBody
-	public BotMessage Test() {
+	public List<BotMessage> Test() {
 		
-		return msgService.getMessageById("61ac63b0e64f046556a82b08");
+		return msgService.getInitialResponse();
 		
 	}
 	
@@ -123,6 +123,7 @@ public class WoeBotController {
 		if(isInitialResponse) {
 		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("How i can help you")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
+		
 		card.setHeader(header);
 		}
 		List<Button> buttonsList = new ArrayList<>();

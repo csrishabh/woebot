@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.rishabh.woebot.domain.BotMessage;
@@ -22,7 +23,7 @@ public class MessageService {
 
 	public List<BotMessage> getResponseByAnsId(String ansId) {
 
-		return repo.getMessageByAndId(ansId);
+		return repo.getMessageByAndId(ansId,Sort.by(Sort.Direction.ASC,"orderNumber"));
 	}
 	
 	public BotMessage getMessageById(String msgId) {

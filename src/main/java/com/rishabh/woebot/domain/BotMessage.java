@@ -21,5 +21,6 @@ public class BotMessage {
 	private String redirectUrl;
 	private String imageUrl;
 	private String response;
+	private long orderNumber;
 	
 }

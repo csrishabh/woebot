@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.domain.Sort;
 
 import com.rishabh.woebot.domain.BotMessage;
 
@@ -18,7 +19,7 @@ public class MessageRepoImpl implements MessageRepoCustom {
 		
 		
 			Criteria regex = Criteria.where("ansId").isNull();
-			return mongoTemplate.find(new Query().addCriteria(regex), BotMessage.class);		
+			return mongoTemplate.find(new Query().addCriteria(regex).with(Sort.by(Sort.Direction.ASC,"orderNumber")), BotMessage.class);		
 	}
 
 }
