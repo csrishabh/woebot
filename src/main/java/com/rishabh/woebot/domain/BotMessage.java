@@ -20,5 +20,6 @@ public class BotMessage {
 	private ResponseType responseType;
 	private String redirectUrl;
 	private String imageUrl;
+	private String response;
 	
 }

@@ -43,9 +43,9 @@ public class WoeBotController {
 	
 	@GetMapping("/test")
 	@ResponseBody
-	public List<BotMessage> Test() {
+	public BotMessage Test() {
 		
-		return msgService.getResponseByAnsId("61ac63b0e64f046556a82b08");
+		return msgService.getMessageById("61ac63b0e64f046556a82b08");
 		
 	}
 	
@@ -83,12 +83,19 @@ public class WoeBotController {
 			reply.setCards(Collections.singletonList(card));
 			break;
 		case "CARD_CLICKED":
-			// Get the custom action name and custom parameter value out of the event
-			// object.
 			String actionName = event.at("/action/actionMethodName").asText();
-			String customParameterValue = event.at("/action/parameters/0/value").asText();
-			card = respondToInteractiveCardClick(actionName, customParameterValue);
-			reply.setCards(Collections.singletonList(card));
+			String actionMsgId = event.at("/action/parameters/0/value").asText();
+			BotMessage msg = msgService.getMessageById(actionMsgId);
+			switch (msg.getResponseType()) {
+			case PLAIN_TEXT:
+				reply.setText(msg.getResponse());
+				break;
+			case CARD:
+				card = respondToInteractiveCardClick(actionName, msg);
+				reply.setCards(Collections.singletonList(card));
+				break;
+			}
+			
 			break;
 		case "REMOVED_FROM_SPACE":
 			String name = event.at("/space/name").asText();
@@ -113,17 +120,6 @@ public class WoeBotController {
 		System.out.println("Message :->" + message);
 		Card card = new Card();
 		List<WidgetMarkup> widgets = new ArrayList<>();
-		/*
-		 * Stream.of(message.split(" ")).forEach((s -> { if (s.contains("header")) {
-		 * CardHeader header = new
-		 * CardHeader().setTitle(BOT_NAME).setSubtitle("Card header")
-		 * .setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE"); card.setHeader(header); }
-		 * else if (s.contains("keyvalue")) { KeyValue widget = new
-		 * KeyValue().setTopLabel("KeyValue widget").
-		 * setContent("This is a KeyValue widget")
-		 * .setBottomLabel("The bottom label").setIcon("STAR"); widgets.add(new
-		 * WidgetMarkup().setKeyValue(widget)); } } }));
-		 */
 		if(isInitialResponse) {
 		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("How i can help you")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
@@ -188,10 +184,9 @@ public class WoeBotController {
 	 * @param customParameterValue custom payload from event
 	 * @return a response card
 	 */
-	private Card respondToInteractiveCardClick(String actionName, String actionMsgId) {
-		
-		System.out.println("Action msg ID ->"+ actionMsgId);
-		List<BotMessage> msgList = msgService.getResponseByAnsId(actionMsgId);
-		return createCardResponse(actionMsgId, msgList, false);
+	private Card respondToInteractiveCardClick(String actionName, BotMessage actionMsg) {
+		System.out.println("Action msg ID ->"+ actionMsg.getId());
+		List<BotMessage> msgList = msgService.getResponseByAnsId(actionMsg.getId());
+		return createCardResponse(actionMsg.getMsgTxt(), msgList, false);
 	}
 }
