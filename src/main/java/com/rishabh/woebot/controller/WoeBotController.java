@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,11 +42,27 @@ public class WoeBotController {
 	private MessageService msgService;
 
 	
-	@GetMapping("/test")
+	@GetMapping("/woebot/message/{message_id}")
 	@ResponseBody
-	public List<BotMessage> Test() {
+	public BotMessage getMessage(@PathVariable("message_id") String message_id) {
+		
+		return msgService.getMessageById(message_id);
+		
+	}
+	
+	@GetMapping("/woebot/parent/messages")
+	@ResponseBody
+	public List<BotMessage> getAllParentMessage() {
 		
 		return msgService.getInitialResponse();
+		
+	}
+	
+	@GetMapping("/woebot/answers/{answer_id}")
+	@ResponseBody
+	public List<BotMessage> getMessageByAnsId(@PathVariable("answer_id") String answer_id) {
+		
+		return msgService.getResponseByAnsId(answer_id);
 		
 	}
 	
