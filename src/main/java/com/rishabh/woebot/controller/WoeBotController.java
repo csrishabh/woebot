@@ -66,6 +66,14 @@ public class WoeBotController {
 		
 	}
 	
+	@PostMapping("/woebot/add/message")
+	@ResponseBody
+	public BotMessage getMessage(@RequestBody BotMessage message) {
+		
+		return msgService.addMessage(message);
+		
+	}
+	
 	/**
 	 * Handles a GET request to the /bot endpoint.
 	 *

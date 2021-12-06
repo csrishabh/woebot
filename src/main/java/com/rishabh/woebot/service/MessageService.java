@@ -20,6 +20,11 @@ public class MessageService {
 
 		return repo.getInitialResponse();
 	}
+	
+	public BotMessage addMessage(BotMessage message) {
+
+		return repo.save(message);
+	}
 
 	public List<BotMessage> getResponseByAnsId(String ansId) {
 
