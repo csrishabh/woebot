@@ -148,7 +148,6 @@ public class WoeBotController {
 		if(isInitialResponse) {
 		CardHeader header = new CardHeader().setTitle(BOT_NAME).setSubtitle("How i can help you")
 				.setImageUrl(HEADER_IMAGE).setImageStyle("IMAGE");
-		
 		card.setHeader(header);
 		}
 		List<Button> buttonsList = new ArrayList<>();
@@ -196,7 +195,10 @@ public class WoeBotController {
 		});
 
 		if (buttonsList.size() > 0) {
-			widgets.add(new WidgetMarkup().setButtons(buttonsList));
+			buttonsList.stream().forEach(bt ->{
+				widgets.add(new WidgetMarkup().setButtons(Collections.singletonList(bt)));
+			});
+			//widgets.add(new WidgetMarkup().setButtons(buttonsList));
 		}
 		Section section = new Section().setWidgets(widgets);
 		card.setSections(Collections.singletonList(section));
